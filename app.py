@@ -1,21 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# ---------- DATABASE ----------
-import os
+
+# ---------------- DATABASE ----------------
 
 def get_db():
     db_path = os.path.join(os.getcwd(), "users.db")
     con = sqlite3.connect(db_path)
     return con
 
+
 def init_db():
     con = get_db()
     cur = con.cursor()
 
+    # Users table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +28,7 @@ def init_db():
         )
     """)
 
+    # Lost items table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS lost_items(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +37,7 @@ def init_db():
         )
     """)
 
+    # Found items table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS found_items(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,15 +49,19 @@ def init_db():
     con.commit()
     con.close()
 
+
 init_db()
 
-# ---------- LOGIN ----------
+
+# ---------------- LOGIN ----------------
+
 @app.route("/", methods=["GET", "POST"])
 def login():
 
     if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
+
+        username = request.form["username"]
+        password = request.form["password"]
 
         con = get_db()
         cur = con.cursor()
@@ -75,11 +84,13 @@ def login():
     return render_template("login.html")
 
 
-# ---------- REGISTER ----------
+# ---------------- REGISTER ----------------
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
 
@@ -99,7 +110,8 @@ def register():
     return render_template("register.html")
 
 
-# ---------- DASHBOARD ----------
+# ---------------- DASHBOARD ----------------
+
 @app.route("/dashboard")
 def dashboard():
 
@@ -109,7 +121,8 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-# ---------- ADD LOST ITEM ----------
+# ---------------- ADD LOST ITEM ----------------
+
 @app.route("/lost", methods=["GET", "POST"])
 def lost():
 
@@ -117,15 +130,16 @@ def lost():
         return redirect(url_for("login"))
 
     if request.method == "POST":
+
         title = request.form["title"]
-        desc = request.form["description"]
+        description = request.form["description"]
 
         con = get_db()
         cur = con.cursor()
 
         cur.execute(
-            "INSERT INTO lost_items(title, description) VALUES (?, ?)",
-            (title, desc)
+            "INSERT INTO lost_items (title, description) VALUES (?, ?)",
+            (title, description)
         )
 
         con.commit()
@@ -136,7 +150,8 @@ def lost():
     return render_template("add_lost.html")
 
 
-# ---------- ADD FOUND ITEM ----------
+# ---------------- ADD FOUND ITEM ----------------
+
 @app.route("/found", methods=["GET", "POST"])
 def found():
 
@@ -144,15 +159,16 @@ def found():
         return redirect(url_for("login"))
 
     if request.method == "POST":
+
         title = request.form["title"]
-        desc = request.form["description"]
+        description = request.form["description"]
 
         con = get_db()
         cur = con.cursor()
 
         cur.execute(
-            "INSERT INTO found_items(title, description) VALUES (?, ?)",
-            (title, desc)
+            "INSERT INTO found_items (title, description) VALUES (?, ?)",
+            (title, description)
         )
 
         con.commit()
@@ -163,7 +179,8 @@ def found():
     return render_template("add_found.html")
 
 
-# ---------- VIEW LOST ITEMS ----------
+# ---------------- VIEW LOST ITEMS ----------------
+
 @app.route("/view-lost")
 def view_lost():
 
@@ -174,14 +191,15 @@ def view_lost():
     cur = con.cursor()
 
     cur.execute("SELECT * FROM lost_items")
-    data = cur.fetchall()
+    items = cur.fetchall()
 
     con.close()
 
-    return render_template("view.html", items=data, title="Lost Items")
+    return render_template("view.html", items=items, title="Lost Items")
 
 
-# ---------- VIEW FOUND ITEMS ----------
+# ---------------- VIEW FOUND ITEMS ----------------
+
 @app.route("/view-found")
 def view_found():
 
@@ -192,14 +210,15 @@ def view_found():
     cur = con.cursor()
 
     cur.execute("SELECT * FROM found_items")
-    data = cur.fetchall()
+    items = cur.fetchall()
 
     con.close()
 
-    return render_template("view.html", items=data, title="Found Items")
+    return render_template("view.html", items=items, title="Found Items")
 
 
-# ---------- ADMIN ----------
+# ---------------- ADMIN PANEL ----------------
+
 @app.route("/admin")
 def admin():
 
@@ -220,15 +239,15 @@ def admin():
     return render_template("admin.html", lost=lost, found=found)
 
 
-# ---------- LOGOUT ----------
+# ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# ---------- RUN APP ----------
-import os
+# ---------------- RUN SERVER ----------------
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
