@@ -1,9 +1,12 @@
 <h2>Report Lost Item</h2>
-<form method="post">
-    Item Name: <input name="name"><br><br>
-    Description: <input name="description"><br><br>
-    Location: <input name="location"><br><br>
-    Date: <input type="date" name="date"><br><br>
-    <button>Submit</button>
+<form method="POST">
+
+<input type="text" name="title" placeholder="Item Title" required>
+<br><br>
+
+<textarea name="description" placeholder="Item Description"></textarea>
+<br><br>
+
+<button type="submit">Report Lost</button>
+
 </form>
-<a href="/dashboard">Back to Dashboard</a>
