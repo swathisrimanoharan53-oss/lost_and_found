@@ -5,8 +5,11 @@ app = Flask(__name__)
 app.secret_key = "secret123"
 
 # ---------- DATABASE ----------
+import os
+
 def get_db():
-    con = sqlite3.connect("users.db")
+    db_path = os.path.join(os.getcwd(), "users.db")
+    con = sqlite3.connect(db_path)
     return con
 
 def init_db():
