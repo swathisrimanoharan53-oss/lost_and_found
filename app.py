@@ -131,8 +131,8 @@ def lost():
 
     if request.method == "POST":
 
-        title = request.form["title"]
-        description = request.form["description"]
+        title = request.form.get("title")
+        description = request.form("description")
 
         con = get_db()
         cur = con.cursor()
