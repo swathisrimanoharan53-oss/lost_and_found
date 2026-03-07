@@ -6,7 +6,8 @@ app.secret_key = "secret123"
 
 # ---------- DATABASE ----------
 def get_db():
-    return sqlite3.connect("users.db")
+    con = sqlite3.connect("users.db")
+    return con
 
 def init_db():
     con = get_db()
@@ -45,6 +46,7 @@ init_db()
 # ---------- LOGIN ----------
 @app.route("/", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -69,9 +71,11 @@ def login():
 
     return render_template("login.html")
 
+
 # ---------- REGISTER ----------
 @app.route("/register", methods=["GET", "POST"])
 def register():
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -87,20 +91,28 @@ def register():
         con.commit()
         con.close()
 
-        return redirect("/")
+        return redirect(url_for("login"))
 
     return render_template("register.html")
+
 
 # ---------- DASHBOARD ----------
 @app.route("/dashboard")
 def dashboard():
+
     if "user" not in session:
-        return redirect("/")
+        return redirect(url_for("login"))
+
     return render_template("dashboard.html")
+
 
 # ---------- ADD LOST ITEM ----------
 @app.route("/lost", methods=["GET", "POST"])
 def lost():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
     if request.method == "POST":
         title = request.form["title"]
         desc = request.form["description"]
@@ -120,9 +132,14 @@ def lost():
 
     return render_template("add_lost.html")
 
+
 # ---------- ADD FOUND ITEM ----------
 @app.route("/found", methods=["GET", "POST"])
 def found():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
     if request.method == "POST":
         title = request.form["title"]
         desc = request.form["description"]
@@ -142,37 +159,47 @@ def found():
 
     return render_template("add_found.html")
 
+
 # ---------- VIEW LOST ITEMS ----------
 @app.route("/view-lost")
 def view_lost():
+
     if "user" not in session:
-        return redirect("/")
+        return redirect(url_for("login"))
 
     con = get_db()
     cur = con.cursor()
+
     cur.execute("SELECT * FROM lost_items")
     data = cur.fetchall()
+
     con.close()
 
     return render_template("view.html", items=data, title="Lost Items")
 
+
 # ---------- VIEW FOUND ITEMS ----------
 @app.route("/view-found")
 def view_found():
+
     if "user" not in session:
-        return redirect("/")
+        return redirect(url_for("login"))
 
     con = get_db()
     cur = con.cursor()
+
     cur.execute("SELECT * FROM found_items")
     data = cur.fetchall()
+
     con.close()
 
     return render_template("view.html", items=data, title="Found Items")
 
+
 # ---------- ADMIN ----------
 @app.route("/admin")
 def admin():
+
     if session.get("role") != "admin":
         return "Access Denied"
 
@@ -189,11 +216,13 @@ def admin():
 
     return render_template("admin.html", lost=lost, found=found)
 
+
 # ---------- LOGOUT ----------
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
 
 # ---------- RUN APP ----------
 if __name__ == "__main__":
