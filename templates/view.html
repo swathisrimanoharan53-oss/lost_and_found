@@ -1,0 +1,15 @@
+<h2>{{ title }}</h2>
+<table border="1">
+<tr>
+    <th>Name</th><th>Description</th><th>Location</th><th>Date</th>
+</tr>
+{% for i in items %}
+<tr>
+    <td>{{ i[2] }}</td>
+    <td>{{ i[3] }}</td>
+    <td>{{ i[4] }}</td>
+    <td>{{ i[5] }}</td>
+</tr>
+{% endfor %}
+</table>
+<a href="/dashboard">Back</a>
