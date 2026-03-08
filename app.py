@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# -------- DATABASE --------
+# ---------------- DATABASE ----------------
 def get_db():
     return sqlite3.connect("users.db")
 
@@ -56,7 +56,7 @@ def init_db():
 
 init_db()
 
-# -------- REGISTER --------
+# ---------------- REGISTER ----------------
 @app.route("/register", methods=["GET","POST"])
 def register():
 
@@ -81,7 +81,7 @@ def register():
     return render_template("register.html")
 
 
-# -------- LOGIN --------
+# ---------------- LOGIN ----------------
 @app.route("/", methods=["GET","POST"])
 def login():
 
@@ -111,7 +111,7 @@ def login():
     return render_template("login.html")
 
 
-# -------- DASHBOARD --------
+# ---------------- DASHBOARD ----------------
 @app.route("/dashboard")
 def dashboard():
 
@@ -121,7 +121,7 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-# -------- ADD LOST ITEM --------
+# ---------------- ADD LOST ITEM ----------------
 @app.route("/lost", methods=["GET","POST"])
 def lost():
 
@@ -149,7 +149,7 @@ def lost():
     return render_template("add_lost.html")
 
 
-# -------- ADD FOUND ITEM --------
+# ---------------- ADD FOUND ITEM ----------------
 @app.route("/found", methods=["GET","POST"])
 def found():
 
@@ -177,7 +177,7 @@ def found():
     return render_template("add_found.html")
 
 
-# -------- VIEW LOST ITEMS --------
+# ---------------- VIEW LOST ITEMS ----------------
 @app.route("/view-lost")
 def view_lost():
 
@@ -195,7 +195,7 @@ def view_lost():
     return render_template("view.html", items=items, title="Lost Items")
 
 
-# -------- VIEW FOUND ITEMS --------
+# ---------------- VIEW FOUND ITEMS ----------------
 @app.route("/view-found")
 def view_found():
 
@@ -213,7 +213,7 @@ def view_found():
     return render_template("view.html", items=items, title="Found Items")
 
 
-# -------- ADMIN PANEL --------
+# ---------------- ADMIN PANEL ----------------
 @app.route("/admin")
 def admin():
 
@@ -234,14 +234,14 @@ def admin():
     return render_template("admin.html", lost=lost, found=found)
 
 
-# -------- LOGOUT --------
+# ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# -------- RUN APP --------
+# ---------------- RUN APP ----------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0", port=port)
