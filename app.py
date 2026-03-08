@@ -40,7 +40,7 @@ def report_lost():
 
 
 # Report Found Item
-@app.route("/report_found", methods=["GET","POST"])
+@app.route("/add_found", methods=["GET","POST"])
 def report_found():
     if request.method == "POST":
         name = request.form["name"]
