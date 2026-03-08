@@ -42,12 +42,13 @@ def init_db():
     """)
 
     # create default admin
-    cur.execute("SELECT * FROM users WHERE username='admin'")
+    cur.execute("SELECT * FROM users WHERE username=?", ("admin",))
     admin = cur.fetchone()
 
     if not admin:
         cur.execute(
-            "INSERT INTO users(username,password,role) VALUES('admin','admin','admin')"
+            "INSERT INTO users(username,password,role) VALUES(?,?,?)",
+            ("admin","admin","admin")
         )
 
     con.commit()
@@ -120,7 +121,7 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-# -------- ADD LOST --------
+# -------- ADD LOST ITEM --------
 @app.route("/lost", methods=["GET","POST"])
 def lost():
 
@@ -137,7 +138,7 @@ def lost():
 
         cur.execute(
             "INSERT INTO lost_items(title,description) VALUES(?,?)",
-            (title,description)
+            (title, description)
         )
 
         con.commit()
@@ -148,7 +149,7 @@ def lost():
     return render_template("add_lost.html")
 
 
-# -------- ADD FOUND --------
+# -------- ADD FOUND ITEM --------
 @app.route("/found", methods=["GET","POST"])
 def found():
 
@@ -165,7 +166,7 @@ def found():
 
         cur.execute(
             "INSERT INTO found_items(title,description) VALUES(?,?)",
-            (title,description)
+            (title, description)
         )
 
         con.commit()
@@ -176,7 +177,7 @@ def found():
     return render_template("add_found.html")
 
 
-# -------- VIEW LOST --------
+# -------- VIEW LOST ITEMS --------
 @app.route("/view-lost")
 def view_lost():
 
@@ -194,7 +195,7 @@ def view_lost():
     return render_template("view.html", items=items, title="Lost Items")
 
 
-# -------- VIEW FOUND --------
+# -------- VIEW FOUND ITEMS --------
 @app.route("/view-found")
 def view_found():
 
@@ -243,4 +244,4 @@ def logout():
 # -------- RUN APP --------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT",5000))
-    app.run(host="0.0.0.0",port=port)
+    app.run(host="0.0.0.0", port=port)
