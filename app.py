@@ -1,25 +1,81 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, session
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# Database connection
+# ---------------- DATABASE ----------------
+
 def get_db():
     conn = sqlite3.connect("lostfound.db")
     return conn
 
 
-# Dashboard
+# ---------------- LOGIN ----------------
+
+@app.route("/", methods=["GET","POST"])
+def login():
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM users WHERE email=? AND password=?", (email,password))
+        user = cur.fetchone()
+
+        conn.close()
+
+        if user:
+            session["user"] = email
+            return redirect("/dashboard")
+        else:
+            return "Invalid login details"
+
+    return render_template("login.html")
+
+
+# ---------------- REGISTER ----------------
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("INSERT INTO users(email,password) VALUES(?,?)",(email,password))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/")
+
+    return render_template("register.html")
+
+
+# ---------------- DASHBOARD ----------------
+
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    if "user" in session:
+        return render_template("dashboard.html")
+    return redirect("/")
 
 
-# Report Lost Item
-@app.route("/report_lost", methods=["GET","POST"])
-def report_lost():
+# ---------------- REPORT LOST ----------------
+
+@app.route("/add_lost", methods=["GET","POST"])
+def add_lost():
+
     if request.method == "POST":
+
         name = request.form["name"]
         description = request.form["description"]
         location = request.form["location"]
@@ -36,13 +92,16 @@ def report_lost():
 
         return redirect("/view_lost")
 
-    return render_template("report_lost.html")
+    return render_template("add_lost.html")
 
 
-# Report Found Item
+# ---------------- REPORT FOUND ----------------
+
 @app.route("/add_found", methods=["GET","POST"])
-def report_found():
+def add_found():
+
     if request.method == "POST":
+
         name = request.form["name"]
         description = request.form["description"]
         location = request.form["location"]
@@ -59,12 +118,14 @@ def report_found():
 
         return redirect("/view_found")
 
-    return render_template("report_found.html")
+    return render_template("add_found.html")
 
 
-# View Lost Items
+# ---------------- VIEW LOST ----------------
+
 @app.route("/view_lost")
 def view_lost():
+
     conn = get_db()
     cur = conn.cursor()
 
@@ -76,9 +137,11 @@ def view_lost():
     return render_template("view_lost.html", items=items)
 
 
-# View Found Items
+# ---------------- VIEW FOUND ----------------
+
 @app.route("/view_found")
 def view_found():
+
     conn = get_db()
     cur = conn.cursor()
 
@@ -90,7 +153,8 @@ def view_found():
     return render_template("view_found.html", items=items)
 
 
-# Logout
+# ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
     session.clear()
