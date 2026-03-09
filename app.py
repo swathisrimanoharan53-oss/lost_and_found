@@ -1,165 +1,190 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# ---------------- DATABASE ----------------
-
+# -------- DATABASE FUNCTIONS --------
 def get_db():
-    conn = sqlite3.connect("lostfound.db")
-    return conn
+    return sqlite3.connect("users.db")
 
+def init_db():
+    con = get_db()
+    cur = con.cursor()
 
-# ---------------- LOGIN ----------------
+    # Users table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        password TEXT,
+        role TEXT
+    )
+    """)
 
-@app.route("/", methods=["GET","POST"])
-def login():
-    if request.method == "POST":
+    # Lost items table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS lost_items(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        description TEXT
+    )
+    """)
 
-        email = request.form["email"]
-        password = request.form["password"]
+    # Found items table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS found_items(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        description TEXT
+    )
+    """)
 
-        conn = get_db()
-        cur = conn.cursor()
+    # Create default admin
+    cur.execute("SELECT * FROM users WHERE username='admin'")
+    admin = cur.fetchone()
+    if not admin:
+        cur.execute(
+            "INSERT INTO users(username,password,role) VALUES('admin','admin','admin')"
+        )
 
-        cur.execute("SELECT * FROM users WHERE email=? AND password=?", (email,password))
-        user = cur.fetchone()
+    con.commit()
+    con.close()
 
-        conn.close()
+# Initialize DB
+init_db()
 
-        if user:
-            session["user"] = email
-            return redirect("/dashboard")
-        else:
-            return "Invalid login details"
-
-    return render_template("login.html")
-
-
-# ---------------- REGISTER ----------------
-
+# -------- REGISTER --------
 @app.route("/register", methods=["GET","POST"])
 def register():
-
     if request.method == "POST":
-
-        email = request.form["email"]
+        username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("INSERT INTO users(email,password) VALUES(?,?)",(email,password))
-
-        conn.commit()
-        conn.close()
-
-        return redirect("/")
+        con = get_db()
+        cur = con.cursor()
+        cur.execute(
+            "INSERT INTO users(username,password,role) VALUES(?,?,?)",
+            (username,password,"user")
+        )
+        con.commit()
+        con.close()
+        return redirect(url_for("login"))
 
     return render_template("register.html")
 
+# -------- LOGIN --------
+@app.route("/", methods=["GET","POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-# ---------------- DASHBOARD ----------------
+        con = get_db()
+        cur = con.cursor()
+        cur.execute(
+            "SELECT * FROM users WHERE username=? AND password=?",
+            (username,password)
+        )
+        user = cur.fetchone()
+        con.close()
 
+        if user:
+            session["user"] = user[1]
+            session["role"] = user[3]
+            return redirect(url_for("dashboard"))
+        else:
+            return "Invalid Login Details"
+
+    return render_template("login.html")
+
+# -------- DASHBOARD --------
 @app.route("/dashboard")
 def dashboard():
-    if "user" in session:
-        return render_template("dashboard.html")
-    return redirect("/")
+    if "user" not in session:
+        return redirect(url_for("login"))
+    return render_template("dashboard.html")
 
-
-# ---------------- REPORT LOST ----------------
-
-@app.route("/add_lost", methods=["GET","POST"])
-def add_lost():
+# -------- ADD LOST ITEM --------
+@app.route("/lost", methods=["GET","POST"])
+def lost():
+    if "user" not in session:
+        return redirect(url_for("login"))
 
     if request.method == "POST":
-
-        name = request.form["name"]
+        title = request.form["title"]
         description = request.form["description"]
-        location = request.form["location"]
-        date = request.form["date"]
 
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("INSERT INTO lost_items(name,description,location,date) VALUES(?,?,?,?)",
-                    (name,description,location,date))
-
-        conn.commit()
-        conn.close()
-
-        return redirect("/view_lost")
+        con = get_db()
+        cur = con.cursor()
+        cur.execute(
+            "INSERT INTO lost_items(title,description) VALUES(?,?)",
+            (title,description)
+        )
+        con.commit()
+        con.close()
+        return redirect(url_for("dashboard"))
 
     return render_template("add_lost.html")
 
-
-# ---------------- REPORT FOUND ----------------
-
-@app.route("/add_found", methods=["GET","POST"])
-def add_found():
+# -------- ADD FOUND ITEM --------
+@app.route("/found", methods=["GET","POST"])
+def found():
+    if "user" not in session:
+        return redirect(url_for("login"))
 
     if request.method == "POST":
-
-        name = request.form["name"]
+        title = request.form["title"]
         description = request.form["description"]
-        location = request.form["location"]
-        date = request.form["date"]
 
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("INSERT INTO found_items(name,description,location,date) VALUES(?,?,?,?)",
-                    (name,description,location,date))
-
-        conn.commit()
-        conn.close()
-
-        return redirect("/view_found")
+        con = get_db()
+        cur = con.cursor()
+        cur.execute(
+            "INSERT INTO found_items(title,description) VALUES(?,?)",
+            (title,description)
+        )
+        con.commit()
+        con.close()
+        return redirect(url_for("dashboard"))
 
     return render_template("add_found.html")
 
-
-# ---------------- VIEW LOST ----------------
-
-@app.route("/view_lost")
+# -------- VIEW LOST ITEMS --------
+@app.route("/view-lost")
 def view_lost():
+    if "user" not in session:
+        return redirect(url_for("login"))
 
-    conn = get_db()
-    cur = conn.cursor()
-
+    con = get_db()
+    cur = con.cursor()
     cur.execute("SELECT * FROM lost_items")
     items = cur.fetchall()
-
-    conn.close()
+    con.close()
 
     return render_template("view_lost.html", items=items)
 
-
-# ---------------- VIEW FOUND ----------------
-
-@app.route("/view_found")
+# -------- VIEW FOUND ITEMS --------
+@app.route("/view-found")
 def view_found():
+    if "user" not in session:
+        return redirect(url_for("login"))
 
-    conn = get_db()
-    cur = conn.cursor()
-
+    con = get_db()
+    cur = con.cursor()
     cur.execute("SELECT * FROM found_items")
     items = cur.fetchall()
-
-    conn.close()
+    con.close()
 
     return render_template("view_found.html", items=items)
 
-
-# ---------------- LOGOUT ----------------
-
+# -------- LOGOUT --------
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect(url_for("login"))
 
-
+# -------- RUN APP --------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
