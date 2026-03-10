@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# -------- DATABASE FUNCTIONS --------
+# DATABASE
 def get_db():
     return sqlite3.connect("users.db")
 
@@ -13,17 +13,14 @@ def init_db():
     con = get_db()
     cur = con.cursor()
 
-    # Users table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
-        password TEXT,
-        role TEXT
+        password TEXT
     )
     """)
 
-    # Lost items table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS lost_items(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +29,6 @@ def init_db():
     )
     """)
 
-    # Found items table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS found_items(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,150 +37,173 @@ def init_db():
     )
     """)
 
-    # Create default admin
-    cur.execute("SELECT * FROM users WHERE username='admin'")
-    admin = cur.fetchone()
-    if not admin:
-        cur.execute(
-            "INSERT INTO users(username,password,role) VALUES('admin','admin','admin')"
-        )
-
     con.commit()
     con.close()
 
-# Initialize DB
 init_db()
 
-# -------- REGISTER --------
+# REGISTER
 @app.route("/register", methods=["GET","POST"])
 def register():
+
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
 
         con = get_db()
         cur = con.cursor()
-        cur.execute(
-            "INSERT INTO users(username,password,role) VALUES(?,?,?)",
-            (username,password,"user")
-        )
+
+        cur.execute("INSERT INTO users(username,password) VALUES(?,?)",
+        (username,password))
+
         con.commit()
         con.close()
+
         return redirect(url_for("login"))
 
     return render_template("register.html")
 
-# -------- LOGIN --------
+
+# LOGIN
 @app.route("/", methods=["GET","POST"])
 def login():
+
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
 
         con = get_db()
         cur = con.cursor()
-        cur.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username,password)
-        )
+
+        cur.execute("SELECT * FROM users WHERE username=? AND password=?",
+        (username,password))
+
         user = cur.fetchone()
+
         con.close()
 
         if user:
-            session["user"] = user[1]
-            session["role"] = user[3]
+            session["user"] = username
             return redirect(url_for("dashboard"))
+
         else:
-            return "Invalid Login Details"
+            return "Invalid Login"
 
     return render_template("login.html")
 
-# -------- DASHBOARD --------
+
+# DASHBOARD
 @app.route("/dashboard")
 def dashboard():
+
     if "user" not in session:
         return redirect(url_for("login"))
+
     return render_template("dashboard.html")
 
-# -------- ADD LOST ITEM --------
+
+# ADD LOST ITEM
 @app.route("/lost", methods=["GET","POST"])
 def lost():
+
     if "user" not in session:
         return redirect(url_for("login"))
 
     if request.method == "POST":
+
         title = request.form["title"]
         description = request.form["description"]
 
         con = get_db()
         cur = con.cursor()
+
         cur.execute(
-            "INSERT INTO lost_items(title,description) VALUES(?,?)",
-            (title,description)
+        "INSERT INTO lost_items(title,description) VALUES(?,?)",
+        (title,description)
         )
+
         con.commit()
         con.close()
-        return redirect(url_for("dashboard"))
+
+        return redirect(url_for("view_lost"))
 
     return render_template("add_lost.html")
 
-# -------- ADD FOUND ITEM --------
+
+# ADD FOUND ITEM
 @app.route("/found", methods=["GET","POST"])
 def found():
+
     if "user" not in session:
         return redirect(url_for("login"))
 
     if request.method == "POST":
+
         title = request.form["title"]
         description = request.form["description"]
 
         con = get_db()
         cur = con.cursor()
+
         cur.execute(
-            "INSERT INTO found_items(title,description) VALUES(?,?)",
-            (title,description)
+        "INSERT INTO found_items(title,description) VALUES(?,?)",
+        (title,description)
         )
+
         con.commit()
         con.close()
-        return redirect(url_for("dashboard"))
+
+        return redirect(url_for("view_found"))
 
     return render_template("add_found.html")
 
-# -------- VIEW LOST ITEMS --------
+
+# VIEW LOST
 @app.route("/view-lost")
 def view_lost():
-    if "user" not in session:
-        return redirect(url_for("login"))
 
     con = get_db()
     cur = con.cursor()
+
     cur.execute("SELECT * FROM lost_items")
+
     items = cur.fetchall()
+
     con.close()
 
     return render_template("view_lost.html", items=items)
 
-# -------- VIEW FOUND ITEMS --------
+
+# VIEW FOUND
 @app.route("/view-found")
 def view_found():
-    if "user" not in session:
-        return redirect(url_for("login"))
 
     con = get_db()
     cur = con.cursor()
+
     cur.execute("SELECT * FROM found_items")
+
     items = cur.fetchall()
+
     con.close()
 
     return render_template("view_found.html", items=items)
 
-# -------- LOGOUT --------
+
+# LOGOUT
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect(url_for("login"))
 
-# -------- RUN APP --------
+
+# RUN APP
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+
+    port = int(os.environ.get("PORT",5000))
+
+    app.run(host="0.0.0.0",port=port)
