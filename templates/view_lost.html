@@ -1,15 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Lost Items</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
 <h2>Lost Items</h2>
 
 {% for item in items %}
 
-Title: {{item[1]}} <br>
-Description: {{item[2]}} <br>
-Location: {{item[3]}} <br>
-Contact: {{item[4]}} <br>
-Date: {{item[5]}}
+<div class="card">
 
-<hr>
+<h3>{{item[1]}}</h3>
+
+<img src="/static/uploads/{{item[6]}}" width="200">
+
+<p>{{item[2]}}</p>
+
+<p><b>Location:</b> {{item[3]}}</p>
+
+<p><b>Contact:</b> {{item[4]}}</p>
+
+<p><b>Date:</b> {{item[5]}}</p>
+
+</div>
 
 {% endfor %}
 
-<a href="/dashboard">Back</a>
+</body>
+</html>

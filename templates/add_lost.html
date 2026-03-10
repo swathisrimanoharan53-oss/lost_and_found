@@ -1,25 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Report Lost Item</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
 <h2>Report Lost Item</h2>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
-Title<br>
-<input type="text" name="title" required><br><br>
+<input type="text" name="title" placeholder="Item Title" required>
 
-Description<br>
-<input type="text" name="description" required><br><br>
+<input type="text" name="description" placeholder="Description">
 
-Location Lost<br>
-<input type="text" name="location" required><br><br>
+<input type="text" name="location" placeholder="Location Lost">
 
-Contact Number<br>
-<input type="text" name="contact" required><br><br>
+<input type="text" name="contact" placeholder="Contact Number">
 
-Date<br>
-<input type="date" name="date" required><br><br>
+<input type="date" name="date">
 
-<button type="submit">Submit Lost Report</button>
+<input type="file" name="image">
+
+<button type="submit">Submit Lost Item</button>
 
 </form>
 
-<br>
-<a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>
