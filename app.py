@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+import os
 
 app = Flask(__name__)
 
-# Create database
+# Create database and tables
 def init_db():
     conn = sqlite3.connect("lostfound.db")
     cursor = conn.cursor()
@@ -33,6 +34,7 @@ def init_db():
 
 init_db()
 
+
 # Login page
 @app.route("/", methods=["GET","POST"])
 def login():
@@ -55,6 +57,7 @@ def dashboard():
 # Report lost item
 @app.route("/report_lost", methods=["GET","POST"])
 def report_lost():
+
     if request.method == "POST":
         name = request.form["name"]
         description = request.form["description"]
@@ -64,8 +67,10 @@ def report_lost():
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO lost_items (name,description,location,date) VALUES (?,?,?,?)",
-                       (name,description,location,date))
+        cursor.execute(
+        "INSERT INTO lost_items (name,description,location,date) VALUES (?,?,?,?)",
+        (name,description,location,date)
+        )
 
         conn.commit()
         conn.close()
@@ -78,6 +83,7 @@ def report_lost():
 # Report found item
 @app.route("/report_found", methods=["GET","POST"])
 def report_found():
+
     if request.method == "POST":
         name = request.form["name"]
         description = request.form["description"]
@@ -87,8 +93,10 @@ def report_found():
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO found_items (name,description,location,date) VALUES (?,?,?,?)",
-                       (name,description,location,date))
+        cursor.execute(
+        "INSERT INTO found_items (name,description,location,date) VALUES (?,?,?,?)",
+        (name,description,location,date)
+        )
 
         conn.commit()
         conn.close()
@@ -101,6 +109,7 @@ def report_found():
 # View lost items
 @app.route("/view_lost")
 def view_lost():
+
     conn = sqlite3.connect("lostfound.db")
     cursor = conn.cursor()
 
@@ -115,6 +124,7 @@ def view_lost():
 # View found items
 @app.route("/view_found")
 def view_found():
+
     conn = sqlite3.connect("lostfound.db")
     cursor = conn.cursor()
 
@@ -132,5 +142,7 @@ def logout():
     return redirect("/")
 
 
+# Run app
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
