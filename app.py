@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# -------------------- DATABASE SETUP --------------------
+# ---------------- DATABASE SETUP ----------------
 
 def init_db():
     conn = sqlite3.connect("lostfound.db")
@@ -19,7 +19,7 @@ def init_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS lost_items (
+    CREATE TABLE IF NOT EXISTS lost_items(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         description TEXT,
@@ -29,7 +29,7 @@ def init_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS found_items (
+    CREATE TABLE IF NOT EXISTS found_items(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         description TEXT,
@@ -43,19 +43,19 @@ def init_db():
 
 init_db()
 
-# -------------------- LOGIN --------------------
+# ---------------- LOGIN ----------------
 
 @app.route("/", methods=["GET","POST"])
 def login():
 
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM users WHERE username=? AND password=?",(username,password))
+        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username,password))
         user = cursor.fetchone()
 
         conn.close()
@@ -66,14 +66,15 @@ def login():
     return render_template("login.html")
 
 
-# -------------------- REGISTER --------------------
+# ---------------- REGISTER ----------------
 
 @app.route("/register", methods=["GET","POST"])
 def register():
 
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
@@ -88,24 +89,24 @@ def register():
     return render_template("register.html")
 
 
-# -------------------- DASHBOARD --------------------
+# ---------------- DASHBOARD ----------------
 
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
 
 
-# -------------------- REPORT LOST ITEM --------------------
+# ---------------- REPORT LOST ITEM ----------------
 
 @app.route("/report_lost", methods=["GET","POST"])
 def report_lost():
 
     if request.method == "POST":
 
-        name = request.form["name"]
-        description = request.form["description"]
-        location = request.form["location"]
-        date = request.form["date"]
+        name = request.form.get("name")
+        description = request.form.get("description")
+        location = request.form.get("location")
+        date = request.form.get("date")
 
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
@@ -123,17 +124,17 @@ def report_lost():
     return render_template("report_lost.html")
 
 
-# -------------------- REPORT FOUND ITEM --------------------
+# ---------------- REPORT FOUND ITEM ----------------
 
 @app.route("/report_found", methods=["GET","POST"])
 def report_found():
 
     if request.method == "POST":
 
-        name = request.form["name"]
-        description = request.form["description"]
-        location = request.form["location"]
-        date = request.form["date"]
+        name = request.form.get("name")
+        description = request.form.get("description")
+        location = request.form.get("location")
+        date = request.form.get("date")
 
         conn = sqlite3.connect("lostfound.db")
         cursor = conn.cursor()
@@ -151,7 +152,7 @@ def report_found():
     return render_template("report_found.html")
 
 
-# -------------------- VIEW LOST ITEMS --------------------
+# ---------------- VIEW LOST ITEMS ----------------
 
 @app.route("/view_lost")
 def view_lost():
@@ -167,7 +168,7 @@ def view_lost():
     return render_template("view_lost.html", data=data)
 
 
-# -------------------- VIEW FOUND ITEMS --------------------
+# ---------------- VIEW FOUND ITEMS ----------------
 
 @app.route("/view_found")
 def view_found():
@@ -183,14 +184,14 @@ def view_found():
     return render_template("view_found.html", data=data)
 
 
-# -------------------- LOGOUT --------------------
+# ---------------- LOGOUT ----------------
 
 @app.route("/logout")
 def logout():
     return redirect("/")
 
 
-# -------------------- RUN APP --------------------
+# ---------------- RUN SERVER ----------------
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
