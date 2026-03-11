@@ -1,13 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect
 import sqlite3
 import os
 
 app = Flask(__name__)
 
-# Create database and tables
+# -------------------- DATABASE SETUP --------------------
+
 def init_db():
     conn = sqlite3.connect("lostfound.db")
     cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        password TEXT
+    )
+    """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS lost_items (
@@ -34,31 +43,65 @@ def init_db():
 
 init_db()
 
+# -------------------- LOGIN --------------------
 
-# Login page
 @app.route("/", methods=["GET","POST"])
 def login():
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        if username == "admin" and password == "admin":
+        conn = sqlite3.connect("lostfound.db")
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM users WHERE username=? AND password=?",(username,password))
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if user:
             return redirect("/dashboard")
 
     return render_template("login.html")
 
 
-# Dashboard
+# -------------------- REGISTER --------------------
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect("lostfound.db")
+        cursor = conn.cursor()
+
+        cursor.execute("INSERT INTO users (username,password) VALUES (?,?)",(username,password))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/")
+
+    return render_template("register.html")
+
+
+# -------------------- DASHBOARD --------------------
+
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
 
 
-# Report lost item
+# -------------------- REPORT LOST ITEM --------------------
+
 @app.route("/report_lost", methods=["GET","POST"])
 def report_lost():
 
     if request.method == "POST":
+
         name = request.form["name"]
         description = request.form["description"]
         location = request.form["location"]
@@ -80,11 +123,13 @@ def report_lost():
     return render_template("report_lost.html")
 
 
-# Report found item
+# -------------------- REPORT FOUND ITEM --------------------
+
 @app.route("/report_found", methods=["GET","POST"])
 def report_found():
 
     if request.method == "POST":
+
         name = request.form["name"]
         description = request.form["description"]
         location = request.form["location"]
@@ -106,7 +151,8 @@ def report_found():
     return render_template("report_found.html")
 
 
-# View lost items
+# -------------------- VIEW LOST ITEMS --------------------
+
 @app.route("/view_lost")
 def view_lost():
 
@@ -121,7 +167,8 @@ def view_lost():
     return render_template("view_lost.html", data=data)
 
 
-# View found items
+# -------------------- VIEW FOUND ITEMS --------------------
+
 @app.route("/view_found")
 def view_found():
 
@@ -136,13 +183,15 @@ def view_found():
     return render_template("view_found.html", data=data)
 
 
-# Logout
+# -------------------- LOGOUT --------------------
+
 @app.route("/logout")
 def logout():
     return redirect("/")
 
 
-# Run app
+# -------------------- RUN APP --------------------
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
