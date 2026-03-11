@@ -1,24 +1,29 @@
-<!DOCTYPE html>
 <html>
-
 <head>
-<title>Dashboard</title>
-<link rel="stylesheet" href="/static/style.css">
+
+<link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+
 </head>
 
 <body>
 
-<h1>Campus Lost & Found System</h1>
+<div class="container">
+
+<div class="title">Lost & Found Management System</div>
 
 <div class="menu">
 
-<a href="/lost">Report Lost Item</a>
+<a href="/report_lost"><div class="card">Report Lost Item</div></a>
 
-<a href="/found">Report Found Item</a>
+<a href="/report_found"><div class="card">Report Found Item</div></a>
 
-<a href="/view-lost">View Lost Items</a>
+<a href="/view_lost"><div class="card">View Lost Items</div></a>
 
-<a href="/view-found">View Found Items</a>
+<a href="/view_found"><div class="card">View Found Items</div></a>
+
+<a href="/logout"><div class="card">Logout</div></a>
+
+</div>
 
 </div>
 

@@ -1,25 +1,79 @@
-<link rel="stylesheet" href="/static/style.css">
+body{
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg,#667eea,#764ba2);
+margin:0;
+padding:0;
+color:white;
+text-align:center;
+}
 
-<h2>Found Items</h2>
+.container{
+width:80%;
+margin:auto;
+padding:40px;
+}
 
-{% for item in items %}
+.title{
+font-size:50px;
+font-weight:bold;
+margin-bottom:30px;
+text-shadow:0 0 20px rgba(255,255,255,0.8);
+}
 
-<div class="card">
+input,textarea{
+width:80%;
+padding:15px;
+margin:10px;
+border:none;
+border-radius:10px;
+font-size:18px;
+}
 
-<h3>{{item[1]}}</h3>
+button{
+padding:15px 40px;
+border:none;
+border-radius:30px;
+font-size:20px;
+font-weight:bold;
+color:white;
+background:linear-gradient(45deg,#ff416c,#ff4b2b);
+cursor:pointer;
+box-shadow:0 10px 20px rgba(0,0,0,0.4);
+transition:0.3s;
+}
 
-<img src="/static/uploads/{{item[6]}}" width="200">
+button:hover{
+transform:scale(1.1);
+}
 
-<p>{{item[2]}}</p>
+.menu{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:30px;
+margin-top:50px;
+}
 
-<p><b>Location:</b> {{item[3]}}</p>
+.card{
+padding:30px;
+width:250px;
+border-radius:20px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+font-size:22px;
+font-weight:bold;
+box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
 
-<p><b>Contact:</b> {{item[4]}}</p>
+.card:hover{
+transform:scale(1.1);
+}
 
-<p><b>Date:</b> {{item[5]}}</p>
-
-<a href="/update-found/{{item[0]}}">Update</a>
-
-</div>
-
-{% endfor %}
+table{
+width:90%;
+margin:auto;
+background:white;
+color:black;
+border-radius:10px;
+padding:20px;
+}
