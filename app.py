@@ -1,30 +1,37 @@
 from flask import Flask, render_template, request, redirect, session
-import sqlite3
+import psycopg2
 import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
+# Upload folder
 UPLOAD_FOLDER = "static/uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# ---------- DATABASE ----------
-def init_db():
-    conn = sqlite3.connect("lostfound.db")
-    cur = conn.cursor()
 
+# Database connection
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+cur = conn.cursor()
+
+
+# Create tables if not exist
+def init_db():
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
         password TEXT
     )
     """)
-
+    
     cur.execute("""
     CREATE TABLE IF NOT EXISTS lost_items(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT,
         description TEXT,
         location TEXT,
@@ -33,10 +40,10 @@ def init_db():
         image TEXT
     )
     """)
-
+    
     cur.execute("""
     CREATE TABLE IF NOT EXISTS found_items(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT,
         description TEXT,
         location TEXT,
@@ -45,65 +52,71 @@ def init_db():
         image TEXT
     )
     """)
-
+    
     conn.commit()
-    conn.close()
 
 init_db()
 
-# ---------- LOGIN ----------
+
+# Login
 @app.route("/", methods=["GET","POST"])
 def login():
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("lostfound.db")
-        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM users WHERE username=%s AND password=%s",
+            (username,password)
+        )
 
-        cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username,password))
         user = cur.fetchone()
-
-        conn.close()
 
         if user:
             session["user"] = username
             return redirect("/dashboard")
+        else:
+            return "Invalid Login"
 
     return render_template("login.html")
 
 
-# ---------- REGISTER ----------
+# Register
 @app.route("/register", methods=["GET","POST"])
 def register():
+
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("lostfound.db")
-        cur = conn.cursor()
-
-        cur.execute("INSERT INTO users(username,password) VALUES(?,?)",(username,password))
+        cur.execute(
+            "INSERT INTO users(username,password) VALUES(%s,%s)",
+            (username,password)
+        )
 
         conn.commit()
-        conn.close()
 
         return redirect("/")
 
     return render_template("register.html")
 
 
-# ---------- DASHBOARD ----------
+# Dashboard
 @app.route("/dashboard")
 def dashboard():
-    if "user" in session:
-        return render_template("dashboard.html")
-    return redirect("/")
+
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("dashboard.html")
 
 
-# ---------- REPORT LOST ITEM ----------
+# Report Lost Item
 @app.route("/lost", methods=["GET","POST"])
 def lost():
+
     if request.method == "POST":
 
         title = request.form["title"]
@@ -113,30 +126,28 @@ def lost():
         date = request.form["date"]
 
         image = request.files["image"]
-        filename = secure_filename(image.filename)
 
-        if filename != "":
+        filename = ""
+        if image:
+            filename = secure_filename(image.filename)
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-
-        conn = sqlite3.connect("lostfound.db")
-        cur = conn.cursor()
 
         cur.execute("""
         INSERT INTO lost_items(title,description,location,contact,date,image)
-        VALUES(?,?,?,?,?,?)
+        VALUES(%s,%s,%s,%s,%s,%s)
         """,(title,description,location,contact,date,filename))
 
         conn.commit()
-        conn.close()
 
         return redirect("/dashboard")
 
     return render_template("add_lost.html")
 
 
-# ---------- REPORT FOUND ITEM ----------
+# Report Found Item
 @app.route("/found", methods=["GET","POST"])
 def found():
+
     if request.method == "POST":
 
         title = request.form["title"]
@@ -146,63 +157,55 @@ def found():
         date = request.form["date"]
 
         image = request.files["image"]
-        filename = secure_filename(image.filename)
 
-        if filename != "":
+        filename = ""
+        if image:
+            filename = secure_filename(image.filename)
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-
-        conn = sqlite3.connect("lostfound.db")
-        cur = conn.cursor()
 
         cur.execute("""
         INSERT INTO found_items(title,description,location,contact,date,image)
-        VALUES(?,?,?,?,?,?)
+        VALUES(%s,%s,%s,%s,%s,%s)
         """,(title,description,location,contact,date,filename))
 
         conn.commit()
-        conn.close()
 
         return redirect("/dashboard")
 
     return render_template("add_found.html")
 
 
-# ---------- VIEW LOST ITEMS ----------
+# View Lost Items
 @app.route("/view-lost")
 def view_lost():
-    conn = sqlite3.connect("lostfound.db")
-    cur = conn.cursor()
 
     cur.execute("SELECT * FROM lost_items")
     items = cur.fetchall()
 
-    conn.close()
-
-    return render_template("view_lost.html", items=items)
+    return render_template("view_lost.html",items=items)
 
 
-# ---------- VIEW FOUND ITEMS ----------
+# View Found Items
 @app.route("/view-found")
 def view_found():
-    conn = sqlite3.connect("lostfound.db")
-    cur = conn.cursor()
 
     cur.execute("SELECT * FROM found_items")
     items = cur.fetchall()
 
-    conn.close()
-
-    return render_template("view_found.html", items=items)
+    return render_template("view_found.html",items=items)
 
 
-# ---------- LOGOUT ----------
+# Logout
 @app.route("/logout")
 def logout():
+
     session.pop("user",None)
+
     return redirect("/")
 
 
-# ---------- RUN APP ----------
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT",10000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(host="0.0.0.0",port=port)
