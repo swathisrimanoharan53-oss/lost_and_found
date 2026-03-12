@@ -1,34 +1,30 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Lost Items</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>View Lost Items | Lost & Found</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-
-<h2>Lost Items</h2>
-
-{% for item in items %}
-
-<div class="card">
-
-<h3>{{item[1]}}</h3>
-
-<img src="/static/uploads/{{item[6]}}" width="200">
-
-<p>{{item[2]}}</p>
-
-<p><b>Location:</b> {{item[3]}}</p>
-
-<p><b>Contact:</b> {{item[4]}}</p>
-
-<p><b>Date:</b> {{item[5]}}</p>
-
-</div>
-
-{% endfor %}
-
+    <div class="view-container">
+        <h2 class="view-title">Lost Items</h2>
+        <table>
+            <tr>
+                <th>Item Name</th>
+                <th>Description</th>
+                <th>Date Lost</th>
+                <th>Location</th>
+            </tr>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.date_lost }}</td>
+                <td>{{ item.location }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
+    </div>
 </body>
 </html>

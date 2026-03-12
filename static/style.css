@@ -1,79 +1,119 @@
-body{
-font-family: 'Poppins', sans-serif;
-background: linear-gradient(135deg,#667eea,#764ba2);
-margin:0;
-padding:0;
-color:white;
-text-align:center;
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.container{
-width:80%;
-margin:auto;
-padding:40px;
+/* Dashboard */
+.dashboard-container {
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    padding: 50px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-.title{
-font-size:50px;
-font-weight:bold;
-margin-bottom:30px;
-text-shadow:0 0 20px rgba(255,255,255,0.8);
+.main-title {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    color: #33415c;
 }
 
-input,textarea{
-width:80%;
-padding:15px;
-margin:10px;
-border:none;
-border-radius:10px;
-font-size:18px;
+.dashboard-buttons .bubble-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    margin: 10px;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(255,126,179,0.4);
+    transition: 0.3s;
+}
+.dashboard-buttons .bubble-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(255,126,179,0.5);
+}
+.dashboard-buttons .logout {
+    background: linear-gradient(45deg, #ff9472, #ffb86c);
 }
 
-button{
-padding:15px 40px;
-border:none;
-border-radius:30px;
-font-size:20px;
-font-weight:bold;
-color:white;
-background:linear-gradient(45deg,#ff416c,#ff4b2b);
-cursor:pointer;
-box-shadow:0 10px 20px rgba(0,0,0,0.4);
-transition:0.3s;
+/* Report Pages */
+.report-container {
+    background: rgba(255,255,255,0.95);
+    padding: 50px 60px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 500px;
+    max-width: 90%;
+}
+.report-container input,
+.report-container textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+.report-container input:focus,
+.report-container textarea:focus {
+    border-color: #66a6ff;
+    box-shadow: 0 0 10px rgba(102,166,255,0.5);
+}
+.report-container button {
+    padding: 15px 50px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(255,126,179,0.4);
+    transition: 0.3s;
+}
+.report-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(255,126,179,0.5);
+}
+.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #66a6ff;
+    font-weight: 600;
 }
 
-button:hover{
-transform:scale(1.1);
+/* View Tables */
+.view-container {
+    background: rgba(255,255,255,0.95);
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
 }
-
-.menu{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-gap:30px;
-margin-top:50px;
+.view-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
-
-.card{
-padding:30px;
-width:250px;
-border-radius:20px;
-background:rgba(255,255,255,0.1);
-backdrop-filter:blur(10px);
-font-size:22px;
-font-weight:bold;
-box-shadow:0 10px 20px rgba(0,0,0,0.3);
+.view-container th, .view-container td {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+    font-weight: 500;
 }
-
-.card:hover{
-transform:scale(1.1);
-}
-
-table{
-width:90%;
-margin:auto;
-background:white;
-color:black;
-border-radius:10px;
-padding:20px;
+.view-container th {
+    background: #66a6ff;
+    color: white;
+    border-radius: 15px;
 }
