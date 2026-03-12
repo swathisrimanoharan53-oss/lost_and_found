@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Report Found Item | Lost & Found</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<title>Report Found Item</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="report-container">
-        <h2 class="form-title">Report Lost Item</h2>
-        <form method="POST">
-            <input type="text" name="item_name" placeholder="Item Name" required>
-            <textarea name="description" placeholder="Description" required></textarea>
-            <input type="date" name="date_lost" required>
-            <input type="text" name="location" placeholder="Location Lost" required>
-            <button type="submit">Submit</button>
-        </form>
-        <a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
-    </div>
+<body class="report-found-bg">
+
+<div class="report-container found">
+    <h2 class="form-title">🎉 Report a Found Item</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="owner_name" placeholder="Owner Name (if known)">
+        <input type="text" name="contact" placeholder="Contact Number (optional)">
+        <input type="text" name="item_name" placeholder="Item Name" required>
+        <input type="text" name="category" placeholder="Category (e.g. Bag, Key)" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="date" name="date_found" required>
+        <input type="text" name="location" placeholder="Where Found?" required>
+        <select name="status" required>
+            <option value="Found">Found</option>
+            <option value="Returned">Returned</option>
+            <option value="Pending">Pending</option>
+        </select>
+        <input type="file" name="image" accept="image/*">
+        <button type="submit">Report Now</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
+</div>
+
 </body>
 </html>
