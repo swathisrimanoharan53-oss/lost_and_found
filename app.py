@@ -8,6 +8,9 @@ app.secret_key = "lostfoundsecret"
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+# create image folder if not exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 def get_db():
     conn = sqlite3.connect("database.db")
@@ -62,6 +65,7 @@ def create_tables():
 
 create_tables()
 
+
 # ---------------- LOGIN ----------------
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -80,7 +84,6 @@ def login():
         )
 
         user = cur.fetchone()
-
         conn.close()
 
         if user:
@@ -159,12 +162,16 @@ def report_lost():
         location = request.form["location"]
         status = request.form["status"]
 
-        image_file = request.files["image"]
         filename = ""
 
-        if image_file:
-            filename = image_file.filename
-            image_file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        # safe image upload
+        if "image" in request.files:
+            image_file = request.files["image"]
+
+            if image_file.filename != "":
+                filename = image_file.filename
+                filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                image_file.save(filepath)
 
         conn = get_db()
         cur = conn.cursor()
@@ -177,6 +184,8 @@ def report_lost():
 
         conn.commit()
         conn.close()
+
+        flash("Lost item reported successfully")
 
         return redirect(url_for("view_lost"))
 
@@ -198,12 +207,16 @@ def report_found():
         location = request.form["location"]
         status = request.form["status"]
 
-        image_file = request.files["image"]
         filename = ""
 
-        if image_file:
-            filename = image_file.filename
-            image_file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        # safe image upload
+        if "image" in request.files:
+            image_file = request.files["image"]
+
+            if image_file.filename != "":
+                filename = image_file.filename
+                filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                image_file.save(filepath)
 
         conn = get_db()
         cur = conn.cursor()
@@ -216,6 +229,8 @@ def report_found():
 
         conn.commit()
         conn.close()
+
+        flash("Found item reported successfully")
 
         return redirect(url_for("view_found"))
 
