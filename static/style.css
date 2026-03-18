@@ -118,7 +118,7 @@ body.dashboard-page {
     background: linear-gradient(45deg, #ff9472, #ffb86c);
 }
 
-/* ---------------- Report Pages (Lost / Found) ---------------- */
+/* ---------------- Report Pages ---------------- */
 .report-container {
     background: rgba(255,255,255,0.95);
     padding: 40px 60px;
@@ -166,12 +166,22 @@ body.dashboard-page {
     box-shadow: 0 15px 25px rgba(255,126,179,0.5);
 }
 
+/* ---------------- Back Button ---------------- */
 .back-btn {
-    display: inline-block;
-    margin-top: 20px;
+    display: block;
+    text-align: center;
+    margin: 30px auto;
+    padding: 12px 25px;
+    width: fit-content;
+    background: #66a6ff;
+    color: white;
+    border-radius: 30px;
     text-decoration: none;
-    color: #66a6ff;
     font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #4a90e2;
 }
 
 /* ---------------- Report Page Backgrounds ---------------- */
@@ -193,53 +203,26 @@ body.dashboard-page {
     min-height: 100vh;
 }
 
-/* ---------------- View Pages ---------------- */
-body.view-page {
+/* ---------------- View Page (FIXED) ---------------- */
+body.view-bg {
     background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
     padding: 40px 20px;
 }
 
-.view-container {
-    background: rgba(255,255,255,0.95);
-    padding: 40px;
-    border-radius: 30px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    width: 90%;
-    max-width: 1000px;
+.view-title {
     text-align: center;
-    margin: auto;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #33415c;
 }
 
-.view-container table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.view-container th,
-.view-container td {
-    padding: 15px;
-    border-bottom: 1px solid #ccc;
-    font-weight: 500;
-}
-
-.view-container th {
-    background: #66a6ff;
-    color: white;
-    border-radius: 15px;
-}
-
-.view-container img {
-    max-width: 100px;
-    border-radius: 10px;
-}
-
-/* ---------------- Cards for Lost / Found Items ---------------- */
+/* ---------------- Cards ---------------- */
 .cards-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 25px;
     justify-items: center;
+    padding: 20px;
 }
 
 .item-card {
@@ -266,6 +249,10 @@ body.view-page {
     padding: 15px;
     text-align: left;
     font-size: 0.95rem;
+}
+
+.item-details p {
+    margin: 6px 0;
 }
 
 .lost-card {

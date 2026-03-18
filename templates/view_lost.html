@@ -8,26 +8,31 @@
 <body class="view-bg">
 
 <h2 class="view-title">Lost Items Dashboard</h2>
+
 <div class="cards-container">
     {% for item in items %}
     <div class="item-card lost-card">
-        {% if item[9] %}
-        <img src="{{ url_for('static', filename='images/' ~ item[9]) }}" class="item-image">
+
+        {% if item.image %}
+        <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="item-image">
         {% endif %}
+
         <div class="item-details">
-            <p><b>Owner:</b> {{ item[1] }}</p>
-            <p><b>Contact:</b> {{ item[2] }}</p>
-            <p><b>Item Name:</b> {{ item[3] }}</p>
-            <p><b>Category:</b> {{ item[4] }}</p>
-            <p><b>Description:</b> {{ item[5] }}</p>
-            <p><b>Date Lost:</b> {{ item[6] }}</p>
-            <p><b>Location:</b> {{ item[7] }}</p>
-            <p><b>Status:</b> {{ item[8] }}</p>
+            <p><b>Owner:</b> {{ item.owner_name }}</p>
+            <p><b>Contact:</b> {{ item.contact }}</p>
+            <p><b>Item Name:</b> {{ item.item_name }}</p>
+            <p><b>Category:</b> {{ item.category }}</p>
+            <p><b>Description:</b> {{ item.description }}</p>
+            <p><b>Date Lost:</b> {{ item.date_lost }}</p>
+            <p><b>Location:</b> {{ item.location }}</p>
+            <p><b>Status:</b> {{ item.status }}</p>
         </div>
+
     </div>
     {% endfor %}
 </div>
 
 <a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
+
 </body>
 </html>
