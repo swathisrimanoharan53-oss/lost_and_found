@@ -11,26 +11,32 @@
 <h2 class="view-title">Lost Items Dashboard</h2>
 
 <div class="cards-container">
-    {% for item in items %}
-    <div class="item-card lost-card">
 
-        {% if item.image %}
-        <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="item-image">
-        {% endif %}
+    {% if items %}
+        {% for item in items %}
+        <div class="item-card lost-card">
 
-        <div class="item-details">
-            <p><b>Owner:</b> {{ item.owner }}</p>
-            <p><b>Contact:</b> {{ item.contact }}</p>
-            <p><b>Item Name:</b> {{ item.item_name }}</p>
-            <p><b>Category:</b> {{ item.category }}</p>
-            <p><b>Description:</b> {{ item.description }}</p>
-            <p><b>Date Lost:</b> {{ item.date }}</p>
-            <p><b>Location:</b> {{ item.location }}</p>
-            <p><b>Status:</b> {{ item.status }}</p>
+            {% if item.image %}
+            <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="item-image">
+            {% endif %}
+
+            <div class="item-details">
+                <p><b>Owner:</b> {{ item.owner }}</p>
+                <p><b>Contact:</b> {{ item.contact }}</p>
+                <p><b>Item Name:</b> {{ item.item_name }}</p>
+                <p><b>Category:</b> {{ item.category }}</p>
+                <p><b>Description:</b> {{ item.description }}</p>
+                <p><b>Date Lost:</b> {{ item.date }}</p>
+                <p><b>Location:</b> {{ item.location }}</p>
+                <p><b>Status:</b> {{ item.status }}</p>
+            </div>
+
         </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;">No lost items found</p>
+    {% endif %}
 
-    </div>
-    {% endfor %}
 </div>
 
 <a href="{{ url_for('dashboard') }}" class="back-btn">⬅ Back to Dashboard</a>
