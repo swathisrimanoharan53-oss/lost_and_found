@@ -1,22 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from pymongo import MongoClient
 import os
+from pymongo import MongoClient
 
 app = Flask(__name__)
 app.secret_key = "lostfoundsecret"
-
-# MongoDB Connection
-client = MongoClient("mongodb+srv://swathisrimanoharan53_db_user:Bw3f3ic8t4vhy0ZH@cluster0.y2ifjb8.mongodb.net/lostfound?retryWrites=true&w=majority")
-db = client["lostfound"]
-
-users_collection = db["users"]
-lost_collection = db["lost_items"]
-found_collection = db["found_items"]
 
 # Upload folder
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ---------------- MONGODB CONNECTION ----------------
+client = MongoClient(os.environ.get("MONGO_URI"))
+db = client["LostFoundProject"]
+
+users_collection = db["users"]
+lost_collection = db["lost_items"]
+found_collection = db["found_items"]
 
 
 # ---------------- LOGIN ----------------
@@ -50,7 +50,7 @@ def register():
         existing_user = users_collection.find_one({"username": username})
 
         if existing_user:
-            flash("Username already exists")
+            flash("Username already exists. Please login.")
             return redirect(url_for("login"))
 
         users_collection.insert_one({
@@ -58,7 +58,7 @@ def register():
             "password": password
         })
 
-        flash("Registration successful")
+        flash("Registration successful. Please login.")
         return redirect(url_for("login"))
 
     return render_template("register.html")
@@ -69,6 +69,7 @@ def register():
 def dashboard():
     if "user" not in session:
         return redirect(url_for("login"))
+
     return render_template("dashboard.html")
 
 
@@ -102,12 +103,12 @@ def report_lost():
                 image_file.save(filepath)
 
         lost_collection.insert_one({
-            "owner_name": owner,
+            "owner": owner,
             "contact": contact,
             "item_name": item,
             "category": category,
             "description": desc,
-            "date_lost": date,
+            "date": date,
             "location": location,
             "status": status,
             "image": filename
@@ -142,12 +143,12 @@ def report_found():
                 image_file.save(filepath)
 
         found_collection.insert_one({
-            "owner_name": owner,
+            "owner": owner,
             "contact": contact,
             "item_name": item,
             "category": category,
             "description": desc,
-            "date_found": date,
+            "date": date,
             "location": location,
             "status": status,
             "image": filename
@@ -173,5 +174,6 @@ def view_found():
     return render_template("view_found.html", items=items)
 
 
+# ---------------- RUN ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)

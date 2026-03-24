@@ -1,0 +1,264 @@
+/* ---------------- General Styles ---------------- */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------------- Login Page ---------------- */
+body.login-page {
+    background: url('login_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    background: rgba(255,255,255,0.95);
+    padding: 50px 70px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 400px;
+}
+
+.login-container h2 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+
+.login-container input:focus {
+    border-color: #66a6ff;
+    box-shadow: 0 0 10px rgba(102,166,255,0.5);
+}
+
+.login-container button {
+    background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    border: none;
+    color: white;
+    padding: 15px 50px;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 10px 20px rgba(255,126,179,0.4);
+    transition: 0.3s;
+}
+
+.login-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(255,126,179,0.5);
+}
+
+.register-link {
+    margin-top: 15px;
+    display: block;
+    color: #66a6ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* ---------------- Dashboard ---------------- */
+body.dashboard-page {
+    background: url('dashboard_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.dashboard-container {
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    padding: 50px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.main-title {
+    font-size: 2.8rem;
+    margin-bottom: 40px;
+    color: #33415c;
+}
+
+.dashboard-buttons .bubble-btn {
+    display: inline-block;
+    padding: 20px 50px;
+    margin: 15px;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(255,126,179,0.4);
+    transition: 0.3s;
+}
+
+.dashboard-buttons .bubble-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(255,126,179,0.5);
+}
+
+.dashboard-buttons .logout {
+    background: linear-gradient(45deg, #ff9472, #ffb86c);
+}
+
+/* ---------------- Report Pages ---------------- */
+.report-container {
+    background: rgba(255,255,255,0.95);
+    padding: 40px 60px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 500px;
+    max-width: 90%;
+}
+
+.report-container input,
+.report-container textarea,
+.report-container select {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+
+.report-container input:focus,
+.report-container textarea:focus,
+.report-container select:focus {
+    border-color: #66a6ff;
+    box-shadow: 0 0 10px rgba(102,166,255,0.5);
+}
+
+.report-container button {
+    padding: 15px 50px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(255,126,179,0.4);
+    transition: 0.3s;
+}
+
+.report-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(255,126,179,0.5);
+}
+
+/* ---------------- Back Button ---------------- */
+.back-btn {
+    display: block;
+    text-align: center;
+    margin: 30px auto;
+    padding: 12px 25px;
+    width: fit-content;
+    background: #66a6ff;
+    color: white;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #4a90e2;
+}
+
+/* ---------------- Report Page Backgrounds ---------------- */
+.report-lost-bg {
+    background: url('report_lost_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.report-found-bg {
+    background: url('report_found_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ---------------- View Page (FIXED) ---------------- */
+body.view-bg {
+    background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
+    padding: 40px 20px;
+}
+
+.view-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #33415c;
+}
+
+/* ---------------- Cards ---------------- */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    justify-items: center;
+    padding: 20px;
+}
+
+.item-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+    width: 300px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.item-card img.item-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.item-details {
+    padding: 15px;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.item-details p {
+    margin: 6px 0;
+}
+
+.lost-card {
+    border-top: 5px solid #ff758c;
+}
+
+.found-card {
+    border-top: 5px solid #66a6ff;
+}
